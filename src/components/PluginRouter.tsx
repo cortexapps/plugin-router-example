@@ -1,4 +1,4 @@
-import React, { ReactNode, useEffect } from 'react';
+import React, { ReactNode, useEffect, useMemo } from 'react';
 import { MemoryRouter, useLocation } from 'react-router-dom';
 
 export interface ParentRoutingSyncOptions {
@@ -8,9 +8,6 @@ export interface ParentRoutingSyncOptions {
 
 /**
  * Custom hook that synchronizes the in-app route with the parent page’s URL.
- * Updates the parent's URL either via the hash or a query parameter.
- *
- * @param options Configuration options for syncing.
  */
 export const useParentRoutingSync = (
   options: ParentRoutingSyncOptions = { mode: 'hash', queryParamKey: 'pluginRoute' }
@@ -46,7 +43,7 @@ interface ParentRouterSyncProps {
 }
 
 /**
- * A helper component that uses the above hook to perform URL synchronization.
+ * Helper component to invoke the URL sync hook.
  */
 const ParentRouterSync: React.FC<ParentRouterSyncProps> = ({ options }) => {
   useParentRoutingSync(options);
@@ -60,21 +57,38 @@ interface PluginRouterProps {
 }
 
 /**
- * PluginRouter is a wrapper around react-router’s MemoryRouter that:
- * - Keeps the plugin routing internal (in-memory).
- * - Syncs route changes to the parent page (using hash or query parameters).
- *
- * @param children The routed components.
- * @param initialEntries Optional initial routes for the MemoryRouter.
- * @param syncOptions Options for URL synchronization.
+ * PluginRouter wraps your app's routing logic and sets the initial route
+ * based on the parent page’s URL if no initial route is provided.
  */
 export const PluginRouter: React.FC<PluginRouterProps> = ({
   children,
   initialEntries,
   syncOptions = { mode: 'hash', queryParamKey: 'pluginRoute' },
 }) => {
+  const defaultInitialEntries = useMemo((): string[] => {
+    // If initialEntries are provided, use them
+    if (initialEntries && initialEntries.length > 0) {
+      return initialEntries;
+    }
+    let route = '/';
+    try {
+      if (window.parent && window.parent !== window) {
+        if (syncOptions.mode === 'query') {
+          const parentUrl = new URL(window.parent.location.href);
+          route = parentUrl.searchParams.get(syncOptions.queryParamKey || 'pluginRoute') || '/';
+        } else if (syncOptions.mode === 'hash') {
+          const parentHash = window.parent.location.hash;
+          route = parentHash ? parentHash.slice(1) : '/';
+        }
+      }
+    } catch (error) {
+      console.error('Error reading parent URL for initial route:', error);
+    }
+    return [route];
+  }, [initialEntries, syncOptions]);
+
   return (
-    <MemoryRouter initialEntries={initialEntries}>
+    <MemoryRouter initialEntries={defaultInitialEntries}>
       <ParentRouterSync options={syncOptions} />
       {children}
     </MemoryRouter>

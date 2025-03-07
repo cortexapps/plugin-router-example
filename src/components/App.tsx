@@ -2,7 +2,7 @@ import type React from "react";
 import { useEffect, useState } from "react";
 
 import { PluginRouter } from './PluginRouter';
-import { Routes, Route, Link } from 'react-router-dom';
+import { Routes, Route, Link, Navigate } from 'react-router-dom';
 
 import { PluginProvider } from "@cortexapps/plugin-core/components";
 import "../baseStyles.css";
@@ -32,7 +32,6 @@ const App: React.FC = () => {
     <ErrorBoundary>
       <PluginRouter
         syncOptions={{ mode: "query", queryParamKey: "pluginRoute" }}
-        initialEntries={["/"]}
       >
         <PluginProvider>
           <nav className="top-nav">
@@ -44,6 +43,7 @@ const App: React.FC = () => {
             <Route path="/" element={<Home />} />
             <Route path="/page1" element={<Page1 />} />
             <Route path="/page2" element={<Page2 />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </PluginProvider>
       </PluginRouter>
