@@ -1,0 +1,40 @@
+body {
+  font: 14px sans-serif;
+}
+
+/* Base styles for the plugin app */
+
+/* Top Navigation Bar */
+.top-nav {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  background-color: #333;
+  color: #fff;
+  padding: 10px 20px;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+/* Navigation Links */
+.nav-link {
+  color: #fff;
+  text-decoration: none;
+  font-size: 16px;
+  margin: 0 10px;
+}
+
+.nav-link:hover {
+  text-decoration: underline;
+}
+
+/* Page Content */
+.page-content {
+  padding: 20px;
+}
+
+/* Container to offset fixed navigation (if needed) */
+.page-container {
+  margin-top: 60px;
+}
