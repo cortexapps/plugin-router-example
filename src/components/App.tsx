@@ -30,10 +30,8 @@ const App: React.FC = () => {
 
   return (
     <ErrorBoundary>
-      <PluginRouter
-        syncOptions={{ mode: "query", queryParamKey: "pluginRoute" }}
-      >
-        <PluginProvider>
+      <PluginProvider>
+        <PluginRouter>
           <nav className="top-nav">
             <Link className="nav-link" to="/">Home</Link>
             <Link className="nav-link" to="/page1">Page 1</Link>
@@ -45,8 +43,8 @@ const App: React.FC = () => {
             <Route path="/page2" element={<Page2 />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
-        </PluginProvider>
-      </PluginRouter>
+        </PluginRouter>
+      </PluginProvider>
     </ErrorBoundary>
   );
 };
